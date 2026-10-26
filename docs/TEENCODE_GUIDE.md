@@ -14,7 +14,7 @@ Trong tiếng Việt và ngôn ngữ mạng, các từ viết tắt rất ngắn
 - `cx` $\rightarrow$ *cũng*
 - `ngta` $\rightarrow$ *người ta*
 
-### ⚠️ Nguy cơ False Positive (Bắt nhầm):
+### Nguy cơ False Positive (Bắt nhầm):
 Nếu sử dụng tìm kiếm chuỗi thông thường (`if "m" in text` hoặc `re.search("m", text)`), hệ thống sẽ gặp sai số nghiêm trọng:
 - Chữ `m` sẽ bị phát hiện nhầm trong các từ như: `làm`, `tìm`, `mua`, `cảm ơn`...
 - Chữ `k` sẽ bị bắt nhầm trong: `like`, `okay`, `kem`...
@@ -38,10 +38,10 @@ pattern = re.compile(rf'(?<!\w){escaped_word}(?!\w)', re.IGNORECASE)
 ### Bảng Kiểm Thử Thực Nghiệm:
 | Câu bình luận đầu vào | Từ viết tắt mục tiêu | Kết quả phân tích | Trạng thái |
 | :--- | :---: | :---: | :---: |
-| `"Hôm nay m đi đâu thế?"` | `m` | Phát hiện: `['m']` | ✅ Chuẩn xác |
-| `"Tôi đang làm bài tập"` | `m` | Không phát hiện | ✅ Tránh bắt nhầm từ `làm` |
-| `"k bt ngta lm ntn mà đỉnh v"` | `k, ngta, lm, ntn, v` | Phát hiện: 5 từ | ✅ Trích xuất đầy đủ |
-| `"Video này hay quá like nha"` | `k` | Không phát hiện | ✅ Tránh bắt nhầm từ `like` |
+| `"Hôm nay m đi đâu thế?"` | `m` | Phát hiện: `['m']` | Chuẩn xác |
+| `"Tôi đang làm bài tập"` | `m` | Không phát hiện | Tránh bắt nhầm từ `làm` |
+| `"k bt ngta lm ntn mà đỉnh v"` | `k, ngta, lm, ntn, v` | Phát hiện: 5 từ | Trích xuất đầy đủ |
+| `"Video này hay quá like nha"` | `k` | Không phát hiện | Tránh bắt nhầm từ `like` |
 
 ---
 

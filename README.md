@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌐 SOCIAL MEDIA COMMENT CRAWLER & TEENCODE ANALYTICS
+# SOCIAL MEDIA COMMENT CRAWLER & TEENCODE ANALYTICS
 ### *Hệ Thống Thu Thập Bình Luận Mạng Xã Hội & Phân Tích Từ Viết Tắt (Nhiệm Vụ 18)*
 
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -16,7 +16,7 @@
 
 ---
 
-## 📌 Mục Lục (Table of Contents)
+## Mục Lục (Table of Contents)
 - [1. Giới Thiệu Nhiệm Vụ 18](#1-giới-thiệu-nhiệm-vụ-18)
 - [2. Tính Năng Nổi Bật (Key Features)](#2-tính-năng-nổi-bật-key-features)
 - [3. Kiến Trúc Hệ Thống (Architecture)](#3-kiến-trúc-hệ-thống-architecture)
@@ -38,12 +38,12 @@ Dự án này cung cấp một bộ khung (Framework) hoàn chỉnh và độc l
 
 ## 2. Tính Năng Nổi Bật (Key Features)
 
-- 🎯 **Lọc Teencode Không Bắt Nhầm (Zero False Positives):** Sử dụng Regex Negative Lookbehind/Lookahead `(?<!\w)...(?!\w)` đảm bảo chữ `m` không bị bắt nhầm trong `làm`, chữ `k` không bị dính vào `like`.
-- 📅 **Lọc Tự Động 5 Năm Gần Nhất:** Chuẩn hóa thời gian về múi giờ Việt Nam (`UTC+7`), tự động loại trừ các bình luận quá 5 năm so với thời điểm cào.
-- 📋 **Trích Xuất 21 Trường Dữ Liệu Chi Tiết:** Đầy đủ thông tin về bài viết, tác giả, nội dung, phản hồi, chỉ số cảm xúc và metadata mở rộng.
-- ⚡ **Hỗ Trợ 5 Nền Tảng Lớn:** YouTube (API & Scraper), Shopee (Ratings API), TikTok, Facebook, Threads.
-- 💾 **Xuất Đa Định Dạng:** Tự động lưu trữ đồng thời ra `CSV (UTF-8 with BOM)`, `JSON Lines`, `SQLite DB` và `Excel`.
-- 📊 **Tích Hợp Sẵn Module Phân Tích & Trực Quan Hóa (EDA):** Tự động vẽ biểu đồ phân phối tần suất từ viết tắt và xu hướng qua từng năm.
+- **Lọc Teencode Không Bắt Nhầm (Zero False Positives):** Sử dụng Regex Negative Lookbehind/Lookahead `(?<!\w)...(?!\w)` đảm bảo chữ `m` không bị bắt nhầm trong `làm`, chữ `k` không bị dính vào `like`.
+- **Lọc Tự Động 5 Năm Gần Nhất:** Chuẩn hóa thời gian về múi giờ Việt Nam (`UTC+7`), tự động loại trừ các bình luận quá 5 năm so với thời điểm cào.
+- **Trích Xuất 21 Trường Dữ Liệu Chi Tiết:** Đầy đủ thông tin về bài viết, tác giả, nội dung, phản hồi, chỉ số cảm xúc và metadata mở rộng.
+- **Hỗ Trợ 5 Nền Tảng Lớn:** YouTube (API & Scraper), Shopee (Ratings API), TikTok, Facebook, Threads.
+- **Xuất Đa Định Dạng:** Tự động lưu trữ đồng thời ra `CSV (UTF-8 with BOM)`, `JSON Lines`, `SQLite DB` và `Excel`.
+- **Tích Hợp Sẵn Module Phân Tích & Trực Quan Hóa (EDA):** Tự động vẽ biểu đồ phân phối tần suất từ viết tắt và xu hướng qua từng năm.
 
 ---
 
@@ -66,11 +66,11 @@ graph LR
 
 Để nghiên cứu sâu hơn về từng khía cạnh, vui lòng xem các tài liệu chuyên ngành trong thư mục [`docs/`](docs/):
 
-- 📘 [**docs/ARCHITECTURE.md**](docs/ARCHITECTURE.md): Kiến trúc module, luồng dữ liệu (Data Pipeline) và mẫu thiết kế OOP.
-- 📗 [**docs/DATA_SCHEMA.md**](docs/DATA_SCHEMA.md): Chi tiết 21 trường dữ liệu, kiểu dữ liệu, ràng buộc và bản ghi JSON mẫu.
-- 📙 [**docs/PLATFORM_GUIDE.md**](docs/PLATFORM_GUIDE.md): Cẩm nang cào dữ liệu cho từng nền tảng, cách trích xuất ID/URL và kỹ thuật vượt anti-bot.
-- 📕 [**docs/TEENCODE_GUIDE.md**](docs/TEENCODE_GUIDE.md): Cơ chế toán học NLP, biểu thức chính quy, công thức tính mật độ Teencode.
-- 🤝 [**CONTRIBUTING.md**](CONTRIBUTING.md): Quy chuẩn đóng góp mã nguồn và cách bổ sung từ vựng mới vào từ điển.
+- [**docs/ARCHITECTURE.md**](docs/ARCHITECTURE.md): Kiến trúc module, luồng dữ liệu (Data Pipeline) và mẫu thiết kế OOP.
+- [**docs/DATA_SCHEMA.md**](docs/DATA_SCHEMA.md): Chi tiết 21 trường dữ liệu, kiểu dữ liệu, ràng buộc và bản ghi JSON mẫu.
+- [**docs/PLATFORM_GUIDE.md**](docs/PLATFORM_GUIDE.md): Cẩm nang cào dữ liệu cho từng nền tảng, cách trích xuất ID/URL và kỹ thuật vượt anti-bot.
+- [**docs/TEENCODE_GUIDE.md**](docs/TEENCODE_GUIDE.md): Cơ chế toán học NLP, biểu thức chính quy, công thức tính mật độ Teencode.
+- [**CONTRIBUTING.md**](CONTRIBUTING.md): Quy chuẩn đóng góp mã nguồn và cách bổ sung từ vựng mới vào từ điển.
 
 ---
 
