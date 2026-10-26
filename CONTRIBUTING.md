@@ -34,19 +34,7 @@ Chào mừng bạn đã tham gia đóng góp cho dự án **Social Media Comment
 
 ---
 
-## 3. Mở Rộng Thêm Nền Tảng Mới
-
-Để thêm một nền tảng cào dữ liệu mới (ví dụ: Instagram, Zalo, Reddit):
-1. Tạo file mới trong thư mục `crawlers/` (ví dụ: `instagram_crawler.py`).
-2. Kế thừa lớp `BaseCrawler` từ `core.base_crawler`.
-3. Hiện thực hóa 2 phương thức bắt buộc:
-   - `fetch_raw_comments(self, target_input: str, max_comments: int)`
-   - `parse_comment_item(self, item: Dict[str, Any], context: Optional[Dict[str, Any]] = None)`
-4. Đăng ký crawler mới vào `crawlers/__init__.py` và `main.py`.
-
----
-
-## 4. Báo Cáo Sự Cố & Đóng Góp Từ Điển Teencode
+## 3. Báo Cáo Sự Cố & Đóng Góp Từ Điển Teencode
 
 Nếu bạn phát hiện các từ viết tắt / từ lóng mới của giới trẻ chưa có trong từ điển:
 - Mở file `config/teencode_dict.json`

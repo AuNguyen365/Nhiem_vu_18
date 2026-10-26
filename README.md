@@ -4,7 +4,6 @@
 ### *Hệ Thống Thu Thập Bình Luận Mạng Xã Hội & Phân Tích Từ Viết Tắt (Nhiệm Vụ 18)*
 
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platforms Supported](https://img.shields.io/badge/Platforms-YouTube%20%7C%20TikTok%20%7C%20Shopee%20%7C%20Facebook%20%7C%20Threads-orange.svg)](#-hướng-dẫn-chọn-nền-tảng-mỗi-nhóm-1-nền-tảng)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Status: Production](https://img.shields.io/badge/Status-Completed-brightgreen.svg)](#)
@@ -26,7 +25,6 @@
 - [6. Hướng Dẫn Chọn Nền Tảng (Mỗi Nhóm 1 Nền Tảng)](#6-hướng-dẫn-chọn-nền-tảng-mỗi-nhóm-1-nền-tảng)
 - [7. Bảng Đặc Tả 21 Trường Dữ Liệu (Schema)](#7-bảng-đặc-tả-21-trường-dữ-liệu-schema)
 - [8. Phân Tích & Vẽ Biểu Đồ Báo Cáo (EDA)](#8-phân-tích--vẽ-biểu-đồ-báo-cáo-eda)
-- [9. Đóng Góp & Tác Quyền](#9-đóng-góp--tác-quyền)
 
 ---
 
@@ -34,7 +32,7 @@
 
 > **Đề bài:** Thu thập comment trên **YouTube / Facebook / TikTok / Shopee / Threads** (lấy những comment có từ viết tắt *"ngta, m, cx,..."*), càng nhiều trường thông tin càng tốt. Mỗi nhóm chọn 1 nền tảng, thu thập trong thời gian **5 năm gần nhất**.
 
-Dự án này cung cấp một bộ khung (Framework) hoàn chỉnh, độc lập và dễ mở rộng, cho phép sinh viên và nhóm nghiên cứu thu thập, làm sạch, phân tích và trực quan hóa dữ liệu ngôn ngữ mạng (Teencode) phục vụ các đề tài Khoa học Dữ liệu, Xử lý Ngôn ngữ Tự nhiên (NLP) và Khai phá Dữ liệu (Data Mining).
+Dự án này cung cấp một bộ khung (Framework) hoàn chỉnh và độc lập, cho phép sinh viên và nhóm nghiên cứu thu thập, làm sạch, phân tích và trực quan hóa dữ liệu ngôn ngữ mạng (Teencode) phục vụ các đề tài Khoa học Dữ liệu, Xử lý Ngôn ngữ Tự nhiên (NLP) và Khai phá Dữ liệu (Data Mining).
 
 ---
 
@@ -80,7 +78,7 @@ graph LR
 
 ### Bước 1: Clone Repository & Cài Đặt Môi Trường
 ```bash
-git clone https://github.com/AuNguyen365/Nhiem_vu_18.git
+git clone <URL_REPOSITORY>
 cd Nhiem_vu_18
 pip install -r requirements.txt
 ```
@@ -153,11 +151,3 @@ python analyze.py data/processed/demo_platform/demo_output_demo_platform.csv
 Kết quả biểu đồ sẽ được lưu dưới định dạng ảnh độ phân giải cao tại thư mục `reports/analysis_charts_*.png`:
 - **Biểu đồ 1:** Top 12 từ viết tắt tiếng Việt xuất hiện phổ biến nhất trong tập dữ liệu.
 - **Biểu đồ 2:** Phân bố khối lượng bình luận theo từng năm trong khoảng thời gian 5 năm.
-
----
-
-## 9. Đóng Góp & Tác Quyền
-
-- Dự án được phát triển phục vụ **Nhiệm vụ 18** - Học phần Khai Phá Dữ Liệu / Xử Lý Ngôn Ngữ Tự Nhiên.
-- Bản quyền thuộc về **[AuNguyen365](https://github.com/AuNguyen365)**.
-- Giấy phép phân phối: [MIT License](LICENSE).
