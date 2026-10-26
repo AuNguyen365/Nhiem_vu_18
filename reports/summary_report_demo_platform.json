@@ -1,0 +1,28 @@
+{
+  "platform": "demo_platform",
+  "total_crawled_comments": 5,
+  "years_distribution": {
+    "2026": 2,
+    "2025": 2,
+    "2024": 1
+  },
+  "top_teencodes_detected": {
+    "cx": 3,
+    "ngta": 2,
+    "k": 2,
+    "v": 2,
+    "mn": 2,
+    "m": 1,
+    "chuẩn": 1,
+    "mik": 1,
+    "bt": 1,
+    "lm": 1,
+    "ntn": 1,
+    "dc": 1,
+    "vs": 1,
+    "z": 1,
+    "r": 1
+  },
+  "avg_teencode_density": 40.67,
+  "total_likes_sum": 538
+}
