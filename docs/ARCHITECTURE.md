@@ -15,7 +15,6 @@ flowchart TD
         TT["TikTok (Web API)"]
         SP["Shopee (Ratings API)"]
         FB["Facebook (Graph / Mobile)"]
-        TH["Threads (Meta GraphQL)"]
     end
 
     subgraph Crawlers ["Tầng Crawler (Inherit BaseCrawler)"]
@@ -23,7 +22,6 @@ flowchart TD
         C_TT["TikTokCrawler"]
         C_SP["ShopeeCrawler"]
         C_FB["FacebookCrawler"]
-        C_TH["ThreadsCrawler"]
     end
 
     subgraph Pipeline ["Pipeline Xử Lý & Làm Giàu Dữ Liệu"]
@@ -51,9 +49,8 @@ flowchart TD
     TT --> C_TT
     SP --> C_SP
     FB --> C_FB
-    TH --> C_TH
 
-    C_YT & C_TT & C_SP & C_FB & C_TH --> RAW_SAVE
+    C_YT & C_TT & C_SP & C_FB --> RAW_SAVE
     RAW_SAVE --> TIME_FILTER
     TIME_FILTER --> NORM
     NORM --> TEEN_FILTER

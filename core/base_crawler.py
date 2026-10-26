@@ -22,7 +22,7 @@ class BaseCrawler(ABC):
     ):
         """
         Khởi tạo Crawler cơ sở.
-        :param platform_name: Tên nền tảng (youtube, facebook, tiktok, shopee, threads)
+        :param platform_name: Tên nền tảng (youtube, facebook, tiktok, shopee)
         :param target_teencodes: Danh sách từ viết tắt cần lọc (mặc định lấy theo teencode_dict)
         :param max_years: Số năm gần nhất cần thu thập (mặc định 5 năm)
         :param rate_limit_delay: Thời gian nghỉ giữa các request

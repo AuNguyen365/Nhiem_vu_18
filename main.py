@@ -19,7 +19,7 @@ from typing import List
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from crawlers import YouTubeCrawler, TikTokCrawler, ShopeeCrawler, FacebookCrawler, ThreadsCrawler
+from crawlers import YouTubeCrawler, TikTokCrawler, ShopeeCrawler, FacebookCrawler
 from utils.logger import logger
 from config.settings import TIME_FILTER_CONFIG
 
@@ -32,7 +32,7 @@ def display_welcome_banner():
         "[yellow]Mục tiêu:[/yellow] Lọc comment chứa từ viết tắt ([bold red]ngta, m, cx, k, mik, mn, dc...[/bold red])\n"
         "[green]Phạm vi thời gian:[/green] 5 năm gần nhất ("
         f"{TIME_FILTER_CONFIG['start_year']} -> {TIME_FILTER_CONFIG['end_year']})\n"
-        "[magenta]Hỗ trợ các nền tảng:[/magenta] YouTube | TikTok | Shopee | Facebook | Threads\n"
+        "[magenta]Hỗ trợ các nền tảng:[/magenta] YouTube | TikTok | Shopee | Facebook\n"
         "[white]Xuất dữ liệu:[/white] CSV (UTF-8 with BOM), JSON Lines, SQLite Database, Excel"
     )
     console.print(Panel(banner_text, expand=False, border_style="blue"))
@@ -44,7 +44,7 @@ def parse_arguments():
     parser.add_argument(
         "-p", "--platform",
         type=str,
-        choices=["youtube", "tiktok", "shopee", "facebook", "threads"],
+        choices=["youtube", "tiktok", "shopee", "facebook"],
         default="youtube",
         help="Chọn 1 nền tảng để thu thập (Mỗi nhóm chọn 1 nền tảng)"
     )
@@ -244,8 +244,6 @@ def main():
         crawler = ShopeeCrawler(target_teencodes=target_words, max_years=args.years)
     elif platform == "facebook":
         crawler = FacebookCrawler(target_teencodes=target_words, max_years=args.years)
-    elif platform == "threads":
-        crawler = ThreadsCrawler(target_teencodes=target_words, max_years=args.years)
     else:
         logger.error(f"Nền tảng '{platform}' không hợp lệ.")
         sys.exit(1)

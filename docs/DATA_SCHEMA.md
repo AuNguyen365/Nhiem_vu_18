@@ -10,7 +10,7 @@ Tài liệu này cung cấp định nghĩa chi tiết của **21 trường thôn
 | :---: | :--- | :---: | :---: | :--- |
 | **1** | `comment_id` | `VARCHAR(64)` | Không | Mã định danh duy nhất của bình luận. Có tiền tố nền tảng để tránh xung đột (vd: `shopee_19283746`, `yt_Ugx7a8b...`). |
 | **2** | `parent_id` | `VARCHAR(64)` | Có | ID của bình luận cha nếu đây là câu trả lời (reply). Là `NULL` nếu là bình luận cấp cao nhất (top-level). |
-| **3** | `platform` | `VARCHAR(16)` | Không | Tên nền tảng mạng xã hội: `youtube`, `tiktok`, `shopee`, `facebook`, `threads`. |
+| **3** | `platform` | `VARCHAR(16)` | Không | Tên nền tảng mạng xã hội: `youtube`, `tiktok`, `shopee`, `facebook`. |
 | **4** | `post_id` | `VARCHAR(64)` | Không | Mã ID của video, bài đăng hoặc sản phẩm chứa bình luận. |
 | **5** | `post_url` | `TEXT` | Không | Đường dẫn URL truy cập trực tiếp tới bài viết/video/sản phẩm trên mạng xã hội. |
 | **6** | `post_title` | `TEXT` | Có | Tiêu đề của video hoặc nội dung mở đầu bài đăng gốc. |

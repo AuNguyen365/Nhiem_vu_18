@@ -48,14 +48,13 @@ RATE_LIMIT_DELAY = {
     "tiktok": 1.5,
     "shopee": 1.0,
     "facebook": 2.0,
-    "threads": 1.5,
 }
 
 # Cấu hình schema chuẩn cho comment (Đầy đủ nhất có thể)
 COMMENT_SCHEMA = [
     "comment_id",          # ID định danh bình luận
     "parent_id",           # ID bình luận cha (nếu là reply)
-    "platform",            # Nền tảng (youtube/facebook/tiktok/shopee/threads)
+    "platform",            # Nền tảng (youtube/facebook/tiktok/shopee)
     "post_id",             # ID video/bài viết/sản phẩm
     "post_url",            # Link gốc bài viết/video/sản phẩm
     "post_title",          # Tiêu đề bài viết/video

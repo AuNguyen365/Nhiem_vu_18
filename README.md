@@ -4,7 +4,7 @@
 ### *Hệ Thống Thu Thập Bình Luận Mạng Xã Hội & Phân Tích Từ Viết Tắt (Nhiệm Vụ 18)*
 
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![Platforms Supported](https://img.shields.io/badge/Platforms-YouTube%20%7C%20TikTok%20%7C%20Shopee%20%7C%20Facebook%20%7C%20Threads-orange.svg)](#-hướng-dẫn-chọn-nền-tảng-mỗi-nhóm-1-nền-tảng)
+[![Platforms Supported](https://img.shields.io/badge/Platforms-YouTube%20%7C%20TikTok%20%7C%20Shopee%20%7C%20Facebook-orange.svg)](#6-hướng-dẫn-chọn-nền-tảng-mỗi-nhóm-1-nền-tảng)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Status: Production](https://img.shields.io/badge/Status-Completed-brightgreen.svg)](#)
 
@@ -30,7 +30,7 @@
 
 ## 1. Giới Thiệu Nhiệm Vụ 18
 
-> **Đề bài:** Thu thập comment trên **YouTube / Facebook / TikTok / Shopee / Threads** (lấy những comment có từ viết tắt *"ngta, m, cx,..."*), càng nhiều trường thông tin càng tốt. Mỗi nhóm chọn 1 nền tảng, thu thập trong thời gian **5 năm gần nhất**.
+> **Đề bài:** Thu thập comment trên **YouTube / Facebook / TikTok / Shopee** (lấy những comment có từ viết tắt *"ngta, m, cx,..."*), càng nhiều trường thông tin càng tốt. Mỗi nhóm chọn 1 nền tảng, thu thập trong thời gian **5 năm gần nhất**.
 
 Dự án này cung cấp một bộ khung (Framework) hoàn chỉnh và độc lập, cho phép sinh viên và nhóm nghiên cứu thu thập, làm sạch, phân tích và trực quan hóa dữ liệu ngôn ngữ mạng (Teencode) phục vụ các đề tài Khoa học Dữ liệu, Xử lý Ngôn ngữ Tự nhiên (NLP) và Khai phá Dữ liệu (Data Mining).
 
@@ -41,7 +41,7 @@ Dự án này cung cấp một bộ khung (Framework) hoàn chỉnh và độc l
 - **Lọc Teencode Không Bắt Nhầm (Zero False Positives):** Sử dụng Regex Negative Lookbehind/Lookahead `(?<!\w)...(?!\w)` đảm bảo chữ `m` không bị bắt nhầm trong `làm`, chữ `k` không bị dính vào `like`.
 - **Lọc Tự Động 5 Năm Gần Nhất:** Chuẩn hóa thời gian về múi giờ Việt Nam (`UTC+7`), tự động loại trừ các bình luận quá 5 năm so với thời điểm cào.
 - **Trích Xuất 21 Trường Dữ Liệu Chi Tiết:** Đầy đủ thông tin về bài viết, tác giả, nội dung, phản hồi, chỉ số cảm xúc và metadata mở rộng.
-- **Hỗ Trợ 5 Nền Tảng Lớn:** YouTube (API & Scraper), Shopee (Ratings API), TikTok, Facebook, Threads.
+- **Hỗ Trợ 4 Nền Tảng Lớn:** YouTube (API & Scraper), Shopee (Ratings API), TikTok, Facebook.
 - **Xuất Đa Định Dạng:** Tự động lưu trữ đồng thời ra `CSV (UTF-8 with BOM)`, `JSON Lines`, `SQLite DB` và `Excel`.
 - **Tích Hợp Sẵn Module Phân Tích & Trực Quan Hóa (EDA):** Tự động vẽ biểu đồ phân phối tần suất từ viết tắt và xu hướng qua từng năm.
 
@@ -51,7 +51,7 @@ Dự án này cung cấp một bộ khung (Framework) hoàn chỉnh và độc l
 
 ```mermaid
 graph LR
-    A[Mạng Xã Hội<br>YouTube / TikTok / Shopee / Facebook / Threads] --> B[Crawler Engine]
+    A[Mạng Xã Hội<br>YouTube / TikTok / Shopee / Facebook] --> B[Crawler Engine]
     B --> C[Lưu Bản Sao Thô<br>Raw JSON]
     C --> D[Bộ Lọc Thời Gian<br>5 Năm Gần Nhất]
     D --> E[Bộ Lọc Teencode<br>Regex Word Boundary]
@@ -107,7 +107,6 @@ Mỗi nhóm chọn **1 nền tảng duy nhất** bằng cờ `-p` (`--platform`)
 | **Shopee** | `python main.py -p shopee -i "URL_SAN_PHAM" --max 1000` | Quần áo thời trang Gen Z, mỹ phẩm, phụ kiện điện thoại *(rất nhiều teencode)* |
 | **TikTok** | `python main.py -p tiktok -i "URL_TIKTOK_VIDEO" --max 500` | Video viral triệu view, nội dung hài hước |
 | **Facebook** | `python main.py -p facebook -i "URL_BAI_VIET" --max 500` | Bài đăng fanpage cộng đồng, confession sinh viên |
-| **Threads** | `python main.py -p threads -i "URL_THREADS_POST" --max 500` | Bài đăng thảo luận xu hướng của giới trẻ Meta |
 
 *Tùy chỉnh danh sách từ cần lọc thông qua tham số `-w` (ví dụ: `-w "ngta,m,cx,k,mik"`).*
 
@@ -119,7 +118,7 @@ Mỗi nhóm chọn **1 nền tảng duy nhất** bằng cờ `-p` (`--platform`)
 | :---: | :--- | :---: | :--- |
 | 1 | `comment_id` | String | ID định danh duy nhất |
 | 2 | `parent_id` | String / Null | ID bình luận cha (nếu là reply) |
-| 3 | `platform` | String | Nền tảng (youtube, tiktok, shopee, facebook, threads) |
+| 3 | `platform` | String | Nền tảng (youtube, tiktok, shopee, facebook) |
 | 4 | `post_id` | String | ID bài viết / video / sản phẩm |
 | 5 | `post_url` | String | Link URL gốc |
 | 6 | `post_title` | String | Tiêu đề bài viết / video |

@@ -1,6 +1,6 @@
 # Hướng Dẫn Từng Nền Tảng (Platform Guide)
 
-Tài liệu này cung cấp hướng dẫn chi tiết dành cho từng nhóm nghiên cứu khi lựa chọn **1 trong 5 nền tảng mạng xã hội**: YouTube, TikTok, Shopee, Facebook, hoặc Threads.
+Tài liệu này cung cấp hướng dẫn chi tiết dành cho từng nhóm nghiên cứu khi lựa chọn **1 trong 4 nền tảng mạng xã hội**: YouTube, TikTok, Shopee, hoặc Facebook.
 
 ---
 
@@ -77,18 +77,4 @@ Facebook sở hữu lượng bình luận khổng lồ nhưng có chính sách b
   python main.py -p facebook -i "https://www.facebook.com/posts/123456789" --max 500
   ```
 
----
 
-## 5. Nền Tảng Threads (`threads`)
-
-Threads là mạng xã hội chia sẻ văn bản dạng ngắn của Meta, cực kỳ phổ biến với học sinh, sinh viên tại Việt Nam.
-
-### Cách lấy Target Input:
-- Copy link bài đăng Threads:
-  - `https://www.threads.net/@nguoidung/post/C4XyZaB123`
-- Hoặc Shortcode của bài đăng: `C4XyZaB123`.
-
-### Lệnh thực thi:
-```bash
-python main.py -p threads -i "https://www.threads.net/@nguoidung/post/C4XyZaB123" --max 500
-```
