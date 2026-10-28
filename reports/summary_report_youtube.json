@@ -1,0 +1,26 @@
+{
+  "platform": "youtube",
+  "total_crawled_comments": 111,
+  "years_distribution": {
+    "2026": 111
+  },
+  "top_teencodes_detected": {
+    "ko": 35,
+    "a": 23,
+    "vs": 18,
+    "đc": 14,
+    "mn": 11,
+    "k": 11,
+    "e": 10,
+    "j": 9,
+    "sao": 8,
+    "m": 6,
+    "cx": 6,
+    "v": 5,
+    "z": 4,
+    "h": 4,
+    "lm": 4
+  },
+  "avg_teencode_density": 14.2,
+  "total_likes_sum": 4292
+}

@@ -211,6 +211,81 @@ def run_demo_simulation(target_words: List[str]):
     console.print(table)
     console.print(f"\n[bold green]✓ Demo hoàn tất thành công! Đã lưu file tại thư mục data/processed/demo_platform[/bold green]")
 
+PLATFORM_HINTS = {
+    "youtube": "https://www.youtube.com/watch?v=VIDEO_ID",
+    "tiktok":  "https://www.tiktok.com/@username/video/7123456789",
+    "shopee":  "https://shopee.vn/ten-san-pham-i.12345.67890",
+    "facebook":"https://www.facebook.com/permalink.php?story_fbid=123&id=456",
+}
+
+def _interactive_form(default_platform: str, default_max: int):
+    """Hiển thị form tương tác trong terminal để thu thập thông tin đầu vào từ người dùng."""
+    from rich.prompt import Prompt, IntPrompt
+    from rich.rule import Rule
+
+    console.print()
+    console.print(Rule("[bold yellow]⚙  THIẾT LẬP PHIÊN CÀO DỮ LIỆU[/bold yellow]", style="yellow"))
+    console.print()
+
+    # --- Bước 1: Chọn nền tảng ---
+    platform_options = {
+        "1": "youtube",
+        "2": "tiktok",
+        "3": "shopee",
+        "4": "facebook",
+    }
+    console.print("[bold cyan]Bước 1 – Chọn nền tảng:[/bold cyan]")
+    console.print("  [white][1][/white] YouTube")
+    console.print("  [white][2][/white] TikTok")
+    console.print("  [white][3][/white] Shopee")
+    console.print("  [white][4][/white] Facebook")
+    console.print()
+
+    default_num = next((k for k, v in platform_options.items() if v == default_platform), "1")
+    while True:
+        choice = Prompt.ask(
+            f"  [green]Nhập số tương ứng[/green]",
+            default=default_num
+        ).strip()
+        if choice in platform_options:
+            platform = platform_options[choice]
+            break
+        console.print("  [red]⚠  Vui lòng nhập 1, 2, 3 hoặc 4.[/red]")
+
+    console.print(f"\n  ✓ Đã chọn: [bold yellow]{platform.upper()}[/bold yellow]\n")
+
+    # --- Bước 2: Nhập URL ---
+    hint = PLATFORM_HINTS[platform]
+    console.print(f"[bold cyan]Bước 2 – Dán link {platform.capitalize()}:[/bold cyan]")
+    console.print(f"  [dim]Ví dụ: {hint}[/dim]")
+    console.print()
+
+    while True:
+        url = Prompt.ask("  [green]Link URL[/green]").strip()
+        if url:
+            break
+        console.print("  [red]⚠  Link không được để trống. Vui lòng thử lại.[/red]")
+
+    console.print(f"\n  ✓ URL: [bold white]{url}[/bold white]\n")
+
+    # --- Bước 3: Số lượng bình luận ---
+    console.print("[bold cyan]Bước 3 – Số bình luận tối đa cần thu thập:[/bold cyan]")
+    console.print(f"  [dim]Khuyên dùng: YouTube/Shopee → 1000, TikTok/Facebook → 500[/dim]")
+    console.print()
+
+    while True:
+        max_c = IntPrompt.ask("  [green]Số lượng[/green]", default=default_max)
+        if max_c > 0:
+            break
+        console.print("  [red]⚠  Phải là số nguyên dương.[/red]")
+
+    console.print()
+    console.print(Rule("[bold green]✓  Bắt đầu thu thập![/bold green]", style="green"))
+    console.print()
+
+    return url, platform, max_c
+
+
 def main():
     display_welcome_banner()
     args = parse_arguments()
@@ -223,15 +298,7 @@ def main():
         return
 
     if not args.input:
-        console.print(
-            "[bold red]Lỗi:[/bold red] Bạn chưa cung cấp link bài viết / video / sản phẩm cần cào (tham số `-i` hoặc `--input`)."
-        )
-        console.print("[yellow]Gợi ý ví dụ sử dụng:[/yellow]")
-        console.print("  [cyan]python main.py -p youtube -i \"https://www.youtube.com/watch?v=VIDEO_ID\" --max 500[/cyan]")
-        console.print("  [cyan]python main.py -p shopee -i \"https://shopee.vn/product-name-i.12345.67890\" --max 500[/cyan]")
-        console.print("  [cyan]python main.py -p tiktok -i \"https://www.tiktok.com/@user/video/7123456789\" --max 500[/cyan]")
-        console.print("  [cyan]python main.py --demo (để chạy thử nghiệm ngay lập tức)[/cyan]")
-        sys.exit(1)
+        args.input, args.platform, args.max = _interactive_form(args.platform, args.max)
 
     platform = args.platform.lower()
 

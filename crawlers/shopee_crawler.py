@@ -29,9 +29,26 @@ class ShopeeCrawler(BaseCrawler):
         """
         Trích xuất shopid và itemid từ URL sản phẩm Shopee hoặc chuỗi shopid_itemid:
         Ví dụ: https://shopee.vn/product-name-i.123456.7891011
+        hoặc: https://shopee.vn/product/123456/7891011
         hoặc: 123456_7891011
         """
         input_str = input_str.strip()
+
+        # Hỗ trợ link rút gọn (shope.ee, s.shopee.vn)
+        if any(domain in input_str for domain in ["shope.ee", "s.shopee.vn"]):
+            try:
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+                }
+                resp = requests.head(input_str, allow_redirects=True, timeout=10, headers=headers)
+                input_str = resp.url
+            except Exception as e:
+                logger.warning(f"[Shopee] Không thể giải mã link rút gọn qua redirect: {e}")
+
+        # Định dạng URL: /product/SHOP_ID/ITEM_ID (vd: https://shopee.vn/product/118768792/1853741392?...)
+        product_match = re.search(r'product\/(\d+)\/(\d+)', input_str)
+        if product_match:
+            return int(product_match.group(1)), int(product_match.group(2))
 
         # Định dạng URL: i.SHOP_ID.ITEM_ID
         match = re.search(r'i\.(\d+)\.(\d+)', input_str)
@@ -57,7 +74,7 @@ class ShopeeCrawler(BaseCrawler):
         if not shop_id or not item_id:
             logger.error(
                 f"[Shopee] Không phân tích được shop_id và item_id từ: '{target_input}'. "
-                f"Định dạng hợp lệ: URL Shopee (vd: https://shopee.vn/ao-thun-i.123.456) hoặc cú pháp: shopid_itemid"
+                f"Định dạng hợp lệ: URL Shopee (vd: https://shopee.vn/product/123/456 hoặc ...-i.123.456) hoặc cú pháp: shopid_itemid"
             )
             return []
 

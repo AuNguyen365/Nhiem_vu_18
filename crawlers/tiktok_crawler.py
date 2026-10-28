@@ -38,6 +38,26 @@ class TikTokCrawler(BaseCrawler):
         # Nếu nhập trực tiếp ID số
         if input_str.isdigit() and len(input_str) >= 15:
             return input_str
+
+        # Nếu là link rút gọn (vt.tiktok.com hoặc vm.tiktok.com)
+        if "tiktok.com" in input_str:
+            try:
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+                }
+                # Theo dõi redirect để lấy URL đầy đủ
+                resp = requests.head(input_str, allow_redirects=True, timeout=10, headers=headers)
+                match = re.search(r'video\/(\d{15,22})', resp.url)
+                if match:
+                    return match.group(1)
+                # Đôi khi TikTok chặn HEAD method, thử dùng GET
+                resp = requests.get(input_str, allow_redirects=True, timeout=10, headers=headers)
+                match = re.search(r'video\/(\d{15,22})', resp.url)
+                if match:
+                    return match.group(1)
+            except Exception as e:
+                logger.warning(f"[TikTok] Không thể giải mã link rút gọn qua redirect: {e}")
+
         return None
 
     def fetch_raw_comments(self, target_input: str, max_comments: int = 1000) -> List[Dict[str, Any]]:

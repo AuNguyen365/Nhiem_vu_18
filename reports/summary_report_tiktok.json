@@ -1,0 +1,26 @@
+{
+  "platform": "tiktok",
+  "total_crawled_comments": 34,
+  "years_distribution": {
+    "2026": 34
+  },
+  "top_teencodes_detected": {
+    "t": 13,
+    "ko": 7,
+    "m": 7,
+    "đc": 3,
+    "v": 2,
+    "haha": 2,
+    "mn": 2,
+    "ng": 2,
+    "h": 2,
+    "e": 2,
+    "a": 2,
+    "mik": 1,
+    "k": 1,
+    "sao": 1,
+    "dc": 1
+  },
+  "avg_teencode_density": 19.68,
+  "total_likes_sum": 229
+}
