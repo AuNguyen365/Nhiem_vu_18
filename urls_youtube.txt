@@ -1,0 +1,15 @@
+# Danh sách URL YouTube mẫu trải dài 5 năm (2021 - 2026) phục vụ cào hàng loạt
+# Mỗi dòng là 1 link video YouTube có nhiều bình luận tiếng Việt
+# Nhóm có thể thay đổi hoặc bổ sung thêm link theo ý muốn:
+
+# Video 2021 - 2022 (Vlog ẩm thực / giải trí nhiều bình luận trẻ)
+https://www.youtube.com/watch?v=0k79q8bE48g
+https://www.youtube.com/watch?v=k_79q8bE48g
+
+# Video 2023 - 2024 (Chương trình truyền hình / MV ca nhạc Gen Z)
+https://www.youtube.com/watch?v=example_2023
+https://www.youtube.com/watch?v=example_2024
+
+# Video 2025 - 2026 (Xu hướng mới nhất)
+https://www.youtube.com/watch?v=example_2025
+

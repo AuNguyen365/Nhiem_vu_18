@@ -61,6 +61,23 @@ class YouTubeCrawler(BaseCrawler):
         url = "https://www.googleapis.com/youtube/v3/commentThreads"
         all_comments = []
         page_token = None
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
+        video_title = f"YouTube Video #{video_id}"
+
+        # Cố gắng lấy video title qua API videos.list nếu có key
+        try:
+            v_res = requests.get(
+                "https://www.googleapis.com/youtube/v3/videos",
+                params={"part": "snippet", "id": video_id, "key": self.api_key},
+                timeout=10
+            )
+            if v_res.status_code == 200:
+                v_data = v_res.json()
+                v_items = v_data.get("items", [])
+                if v_items:
+                    video_title = v_items[0].get("snippet", {}).get("title", video_title)
+        except Exception:
+            pass
 
         while len(all_comments) < max_comments:
             params = {
@@ -85,12 +102,18 @@ class YouTubeCrawler(BaseCrawler):
                     break
 
                 for item in items:
+                    item["_video_id"] = video_id
+                    item["_post_url"] = video_url
+                    item["_post_title"] = video_title
                     all_comments.append(item)
                     # Nếu có replies con đi kèm
                     replies = item.get("replies", {}).get("comments", [])
                     for rep in replies:
                         rep["_is_reply"] = True
                         rep["_parent_id"] = item.get("id")
+                        rep["_video_id"] = video_id
+                        rep["_post_url"] = video_url
+                        rep["_post_title"] = video_title
                         all_comments.append(rep)
 
                 page_token = data.get("nextPageToken")
@@ -109,7 +132,7 @@ class YouTubeCrawler(BaseCrawler):
     def _fetch_via_innertube(self, video_id: str, max_comments: int) -> List[Dict[str, Any]]:
         """
         Fallback Scraper: Sử dụng endpoint API nội bộ YouTube Innertube.
-        Không yêu cầu API key. Trích xuất API key và continuation token từ HTML trang video.
+        Không yêu cầu API key. Trích xuất API key, title và continuation token từ HTML trang video.
         """
         all_comments = []
         session = requests.Session()
@@ -125,8 +148,13 @@ class YouTubeCrawler(BaseCrawler):
             res.raise_for_status()
             html = res.text
 
+            # --- Bước 0: Trích xuất Video Title ---
+            video_title = ""
+            m_title = re.search(r'<title>([^<]+)</title>', html)
+            if m_title:
+                video_title = re.sub(r'\s*-\s*YouTube\s*$', '', m_title.group(1).strip(), flags=re.IGNORECASE)
+
             # --- Bước 1: Trích xuất INNERTUBE_API_KEY ---
-            # YouTube có thể đặt key trong nhiều dạng khác nhau tuỳ phiên bản
             inner_api_key = None
             for key_pattern in [
                 r'"INNERTUBE_API_KEY"\s*:\s*"([^"]+)"',
@@ -138,7 +166,6 @@ class YouTubeCrawler(BaseCrawler):
                     inner_api_key = m.group(1)
                     break
 
-            # Fallback: dùng key công khai đã biết của WEB client
             if not inner_api_key:
                 inner_api_key = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
                 logger.info("[YouTube Scraper] Dùng Innertube API key công khai làm fallback.")
@@ -158,12 +185,20 @@ class YouTubeCrawler(BaseCrawler):
                     except json.JSONDecodeError:
                         continue
 
+            if not video_title and yt_data:
+                try:
+                    video_title = yt_data.get("videoDetails", {}).get("title", "")
+                except Exception:
+                    pass
+
+            if not video_title:
+                video_title = f"YouTube Video #{video_id}"
+
             # --- Bước 3: Lấy continuation token cho phần comment ---
             continuation_token = None
             if yt_data:
                 continuation_token = self._extract_comment_token(yt_data)
 
-            # Fallback regex trực tiếp trên HTML nếu parse JSON thất bại
             if not continuation_token:
                 for token_pattern in [
                     r'"continuationCommand"\s*:\s*\{"token"\s*:\s*"([^"]+)"',
@@ -180,7 +215,7 @@ class YouTubeCrawler(BaseCrawler):
                                "Video có thể đã tắt bình luận hoặc YouTube đã thay đổi cấu trúc trang.")
                 return []
 
-            logger.info(f"[YouTube Scraper] Khởi động cào bình luận cho video: {video_id}")
+            logger.info(f"[YouTube Scraper] Khởi động cào bình luận cho video: {video_id} ('{video_title[:40]}...')")
             api_endpoint = "https://www.youtube.com/youtubei/v1/next"
 
             while len(all_comments) < max_comments and continuation_token:
@@ -210,7 +245,13 @@ class YouTubeCrawler(BaseCrawler):
                     logger.info("[YouTube Scraper] Hết bình luận hoặc không parse được trang tiếp theo.")
                     break
 
-                all_comments.extend(items)
+                # Gán video metadata vào từng comment
+                for it in items:
+                    it["_video_id"] = video_id
+                    it["_post_url"] = video_url
+                    it["_post_title"] = video_title
+                    all_comments.append(it)
+
                 continuation_token = next_token
                 logger.info(f"[YouTube Scraper] Đã cào được {len(all_comments)}/{max_comments} bình luận...")
                 random_sleep(self.rate_limit_delay)
@@ -222,7 +263,6 @@ class YouTubeCrawler(BaseCrawler):
 
     def _extract_comment_token(self, yt_data: Dict[str, Any]) -> Optional[str]:
         """Duyệt qua ytInitialData để tìm continuation token dành cho phần bình luận."""
-        # Đường dẫn phổ biến trong ytInitialData
         try:
             contents = (
                 yt_data.get("contents", {})
@@ -245,11 +285,10 @@ class YouTubeCrawler(BaseCrawler):
         except Exception:
             pass
 
-        # Duyệt đệ quy toàn bộ cây JSON nếu đường dẫn chuẩn không tìm thấy
         return self._deep_find_token(yt_data)
 
     def _deep_find_token(self, obj: Any, depth: int = 0) -> Optional[str]:
-        """Tìm kiếm đệ quy token continuation trong JSON (giới hạn độ sâu để tránh vòng lặp)."""
+        """Tìm kiếm đệ quy token continuation trong JSON."""
         if depth > 15:
             return None
         if isinstance(obj, dict):
@@ -272,8 +311,8 @@ class YouTubeCrawler(BaseCrawler):
         """
         Bóc tách comment từ JSON Innertube.
         Hỗ trợ 2 cấu trúc:
-        - Cũ: commentRenderer trực tiếp trong continuationItems
-        - Mới (ViewModel): comment data trong frameworkUpdates.entityBatchUpdate.mutations
+        - Cấu trúc ViewModel (YouTube 2024+): frameworkUpdates.entityBatchUpdate.mutations
+        - Cấu trúc Renderer cũ: commentRenderer trực tiếp trong continuationItems
         """
         comments = []
         next_token = None
@@ -333,9 +372,9 @@ class YouTubeCrawler(BaseCrawler):
     def parse_comment_item(self, item: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
         """Chuẩn hóa dữ liệu bình luận YouTube sang COMMENT_SCHEMA."""
         context = context or {}
-        post_url = context.get("post_url", "")
-        post_title = context.get("post_title", "")
-        video_id = context.get("video_id", "")
+        video_id = item.get("_video_id") or context.get("video_id", "")
+        post_url = item.get("_post_url") or context.get("post_url", f"https://www.youtube.com/watch?v={video_id}" if video_id else "")
+        post_title = item.get("_post_title") or context.get("post_title", f"YouTube Video #{video_id}" if video_id else "")
 
         # Trường hợp 0: Dữ liệu từ ViewModel mới (YouTube 2024+ Mutations)
         if item.get("_viewmodel"):
@@ -367,7 +406,7 @@ class YouTubeCrawler(BaseCrawler):
                 "parent_id": None,
                 "platform": "youtube",
                 "post_id": video_id,
-                "post_url": post_url or f"https://www.youtube.com/watch?v={video_id}",
+                "post_url": post_url,
                 "post_title": post_title,
                 "author_id": author_id,
                 "author_name": author_name,
@@ -449,13 +488,11 @@ class YouTubeCrawler(BaseCrawler):
             author_avatar = avatars[-1].get("url") if avatars else ""
             likes_text = item.get("voteCount", {}).get("simpleText", "0")
             
-            # Xử lý text like (vd: "1,2 N", "350")
             likes = 0
             if likes_text.isdigit():
                 likes = int(likes_text)
 
             published_time_text = item.get("publishedTimeText", {}).get("runs", [{}])[0].get("text", "")
-            # Ước lượng datetime
             dt_obj = parse_iso_datetime(published_time_text)
             created_at_utc, created_at_vn, year = format_datetime_vn(dt_obj)
 

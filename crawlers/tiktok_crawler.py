@@ -45,12 +45,10 @@ class TikTokCrawler(BaseCrawler):
                 headers = {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
                 }
-                # Theo dõi redirect để lấy URL đầy đủ
                 resp = requests.head(input_str, allow_redirects=True, timeout=10, headers=headers)
                 match = re.search(r'video\/(\d{15,22})', resp.url)
                 if match:
                     return match.group(1)
-                # Đôi khi TikTok chặn HEAD method, thử dùng GET
                 resp = requests.get(input_str, allow_redirects=True, timeout=10, headers=headers)
                 match = re.search(r'video\/(\d{15,22})', resp.url)
                 if match:
@@ -72,6 +70,8 @@ class TikTokCrawler(BaseCrawler):
         cursor = 0
         count_per_req = 20
         api_url = "https://www.tiktok.com/api/comment/list/"
+        video_url = target_input if "tiktok.com" in target_input else f"https://www.tiktok.com/@user/video/{video_id}"
+        post_title = f"TikTok Video #{video_id}"
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -83,6 +83,19 @@ class TikTokCrawler(BaseCrawler):
             headers["Cookie"] = self.session_cookie
 
         session = requests.Session()
+
+        # Thử lấy video title/caption từ trang HTML
+        try:
+            page_resp = session.get(video_url, headers=headers, timeout=10)
+            if page_resp.status_code == 200:
+                m_t = re.search(r'<title>([^<]+)</title>', page_resp.text)
+                if m_t:
+                    raw_title = m_t.group(1).strip()
+                    clean_t = re.sub(r'\s*\|\s*TikTok\s*$', '', raw_title, flags=re.IGNORECASE)
+                    if clean_t:
+                        post_title = clean_t
+        except Exception:
+            pass
 
         while len(all_comments) < max_comments:
             params = {
@@ -105,12 +118,20 @@ class TikTokCrawler(BaseCrawler):
                 has_more = data.get("has_more", 0)
 
                 if not comments:
-                    logger.info("[TikTok] Hết bình luận hoặc TikTok yêu cầu xác thực bot (Captcha/msToken).")
+                    if len(all_comments) == 0:
+                        logger.warning(
+                            "[TikTok] Không nhận được bình luận. "
+                            "TikTok có thể yêu cầu Cookie xác thực chống bot (Captcha/msToken). "
+                            "Hãy thử thiết lập biến môi trường TIKTOK_COOKIE."
+                        )
+                    else:
+                        logger.info("[TikTok] Đã lấy hết bình luận của video.")
                     break
 
                 for c in comments:
                     c["_video_id"] = video_id
-                    c["_post_url"] = f"https://www.tiktok.com/@user/video/{video_id}"
+                    c["_post_url"] = video_url
+                    c["_post_title"] = post_title
                     all_comments.append(c)
 
                 cursor = data.get("cursor", cursor + count_per_req)
@@ -150,6 +171,7 @@ class TikTokCrawler(BaseCrawler):
 
         video_id = item.get("_video_id") or context.get("video_id", "")
         post_url = item.get("_post_url") or context.get("post_url", f"https://www.tiktok.com/@user/video/{video_id}")
+        post_title = item.get("_post_title") or context.get("post_title", f"TikTok Video #{video_id}")
 
         return {
             "comment_id": f"tiktok_{comment_id}",
@@ -157,7 +179,7 @@ class TikTokCrawler(BaseCrawler):
             "platform": "tiktok",
             "post_id": video_id,
             "post_url": post_url,
-            "post_title": context.get("post_title", f"TikTok Video #{video_id}"),
+            "post_title": post_title,
             "author_id": author_id,
             "author_name": author_name,
             "author_avatar_url": avatar_url,
