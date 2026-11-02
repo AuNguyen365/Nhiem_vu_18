@@ -8,6 +8,7 @@ import re
 from typing import Dict, List, Tuple, Any, Optional
 from pathlib import Path
 from config.settings import TEENCODE_DICT_PATH
+from utils.helpers import clean_comment_text
 
 class TeencodeFilter:
     def __init__(self, dict_path: Optional[Path] = None, target_words_only: Optional[List[str]] = None):
@@ -57,20 +58,22 @@ class TeencodeFilter:
     def _compile_regexes(self):
         """
         Biên dịch Regex ranh giới từ (Word Boundary) để phát hiện chính xác:
-        Tránh bắt nhầm chữ cái đơn nằm trong từ khác (ví dụ: 'm' không bị bắt nhầm trong 'làm', 'k' trong 'like').
-        Sử dụng unicode word boundary và tokenization chuẩn tiếng Việt.
+        - Với từ 1 ký tự (m, t, k, v...): Chặn thêm dấu nháy đơn (i'm), dấu chấm (m.n) và gạch nối để tránh false positives.
+        - Với từ đa ký tự (ngta, cx, mik...): Sử dụng unicode word boundary (?<!\\w)...(?!\\w).
         """
         for word in self.abbreviations.keys():
-            # Escape ký tự đặc biệt nếu có
             escaped_word = re.escape(word)
-            # Ranh giới từ: trước và sau là ký tự không phải chữ/số (hoặc đầu/cuối câu)
-            # Đối với tiếng Việt, regex pattern chuẩn là (?<!\w) từ (?!\w)
-            pattern = re.compile(rf'(?<!\w){escaped_word}(?!\w)', re.IGNORECASE)
+            if len(word) == 1:
+                # Từ đơn: tránh bắt dính vào dấu nháy đơn ' (i'm), dấu chấm . (m.n), dấu gạch nối -
+                pattern = re.compile(rf'(?<![\w\'\’\.\-]){escaped_word}(?![\w\'\’\.\-])', re.IGNORECASE)
+            else:
+                pattern = re.compile(rf'(?<!\w){escaped_word}(?!\w)', re.IGNORECASE)
             self._compiled_patterns[word.lower()] = pattern
 
     def analyze_text(self, text: str) -> Dict[str, Any]:
         """
         Phân tích chuyên sâu văn bản bình luận:
+        - Loại bỏ mention rác (@username) và URL trước khi phân tích
         - Phát hiện các từ viết tắt
         - Đếm số lần xuất hiện
         - Tính mật độ viết tắt (teencode density)
@@ -85,7 +88,17 @@ class TeencodeFilter:
                 "expanded_meanings": {},
             }
 
-        cleaned = text.strip()
+        # Làm sạch mention và URL trước khi phân tích
+        cleaned = clean_comment_text(text, remove_mentions=True)
+        if not cleaned:
+            return {
+                "has_teencode": False,
+                "detected_teencodes": [],
+                "teencode_count": 0,
+                "teencode_density": 0.0,
+                "expanded_meanings": {},
+            }
+
         words = re.findall(r'\b\w+\b', cleaned, re.UNICODE)
         total_words = len(words)
 
