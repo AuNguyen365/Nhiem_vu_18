@@ -1,6 +1,7 @@
 """
 Main CLI Controller for Social Media Comment Crawler Framework (Nhiệm vụ 18).
 Cho phép nhóm chọn 1 nền tảng bất kỳ để cào comment trong 5 năm gần nhất và lọc từ viết tắt (ngta, m, cx...).
+Hỗ trợ cào 1 URL đơn lẻ, danh sách nhiều URL, hoặc nạp file text danh sách URL (Batch mode).
 """
 
 import sys
@@ -51,7 +52,7 @@ def parse_arguments():
     parser.add_argument(
         "-i", "--input",
         type=str,
-        help="URL hoặc ID của bài viết, video, sản phẩm cần cào bình luận"
+        help="URL, ID, file .txt chứa danh sách link hoặc nhiều link cách nhau bằng dấu phẩy"
     )
     parser.add_argument(
         "-m", "--max",
@@ -68,7 +69,7 @@ def parse_arguments():
     parser.add_argument(
         "-w", "--words",
         type=str,
-        default="ngta,m,cx,k,ko,dc,đc,mik,mn,bt,v,j,z,h,vs,ntn,nma,t",
+        default="ngta,m,cx,k,ko,dc,đc,mik,mn,bt,v,j,z,h,vs,s,ntn,nma,t",
         help="Danh sách các từ viết tắt cần lọc, ngăn cách bằng dấu phẩy (vd: ngta,m,cx)"
     )
     parser.add_argument(
@@ -94,7 +95,6 @@ def run_demo_simulation(target_words: List[str]):
     console.print("\n[bold green]>>> ĐANG KHỞI CHẠY CHẾ ĐỘ MÔ PHỎNG DỮ LIỆU TEST (DEMO MODE)...[/bold green]")
 
     now = datetime.now(timezone.utc)
-    # Tạo 10 comment mẫu đại diện từ các năm từ 2021 đến 2026
     sample_raw_comments = [
         {
             "id": "c1",
@@ -227,7 +227,6 @@ def _interactive_form(default_platform: str, default_max: int):
     console.print(Rule("[bold yellow]⚙  THIẾT LẬP PHIÊN CÀO DỮ LIỆU[/bold yellow]", style="yellow"))
     console.print()
 
-    # --- Bước 1: Chọn nền tảng ---
     platform_options = {
         "1": "youtube",
         "2": "tiktok",
@@ -254,21 +253,19 @@ def _interactive_form(default_platform: str, default_max: int):
 
     console.print(f"\n  ✓ Đã chọn: [bold yellow]{platform.upper()}[/bold yellow]\n")
 
-    # --- Bước 2: Nhập URL ---
     hint = PLATFORM_HINTS[platform]
-    console.print(f"[bold cyan]Bước 2 – Dán link {platform.capitalize()}:[/bold cyan]")
-    console.print(f"  [dim]Ví dụ: {hint}[/dim]")
+    console.print(f"[bold cyan]Bước 2 – Dán link {platform.capitalize()} hoặc file .txt danh sách link:[/bold cyan]")
+    console.print(f"  [dim]Ví dụ: {hint} hoặc urls.txt[/dim]")
     console.print()
 
     while True:
-        url = Prompt.ask("  [green]Link URL[/green]").strip()
+        url = Prompt.ask("  [green]Link URL / File[/green]").strip()
         if url:
             break
-        console.print("  [red]⚠  Link không được để trống. Vui lòng thử lại.[/red]")
+        console.print("  [red]⚠  Không được để trống. Vui lòng thử lại.[/red]")
 
-    console.print(f"\n  ✓ URL: [bold white]{url}[/bold white]\n")
+    console.print(f"\n  ✓ Mục tiêu: [bold white]{url}[/bold white]\n")
 
-    # --- Bước 3: Số lượng bình luận ---
     console.print("[bold cyan]Bước 3 – Số bình luận tối đa cần thu thập:[/bold cyan]")
     console.print(f"  [dim]Khuyên dùng: YouTube/Shopee → 1000, TikTok/Facebook → 500[/dim]")
     console.print()
@@ -285,6 +282,21 @@ def _interactive_form(default_platform: str, default_max: int):
 
     return url, platform, max_c
 
+def resolve_target_urls(input_arg: str) -> List[str]:
+    """Phân giải tham số input thành danh sách URL hợp lệ (từ file text, chuỗi phẩy, hoặc 1 URL)."""
+    input_str = input_arg.strip()
+    if os.path.isfile(input_str):
+        urls = []
+        with open(input_str, "r", encoding="utf-8") as f:
+            for line in f:
+                cleaned = line.strip()
+                if cleaned and not cleaned.startswith("#"):
+                    urls.append(cleaned)
+        return urls
+    elif "," in input_str:
+        return [u.strip() for u in input_str.split(",") if u.strip()]
+    else:
+        return [input_str]
 
 def main():
     display_welcome_banner()
@@ -302,7 +314,6 @@ def main():
 
     platform = args.platform.lower()
 
-    # Khởi tạo Crawler theo nền tảng được nhóm lựa chọn
     if platform == "youtube":
         crawler = YouTubeCrawler(target_teencodes=target_words, max_years=args.years)
     elif platform == "tiktok":
@@ -315,16 +326,38 @@ def main():
         logger.error(f"Nền tảng '{platform}' không hợp lệ.")
         sys.exit(1)
 
+    url_list = resolve_target_urls(args.input)
+    if not url_list:
+        logger.error("Không tìm thấy URL hợp lệ nào để cào.")
+        sys.exit(1)
+
     console.print(f"\n[bold blue]Bắt đầu quy trình cào cho nền tảng:[/bold blue] [bold yellow]{platform.upper()}[/bold yellow]")
+    console.print(f"[white]- Số lượng mục tiêu (URL):[/white] [cyan]{len(url_list)}[/cyan]")
     console.print(f"[white]- Giới hạn thời gian:[/white] [green]{args.years} năm gần nhất[/green]")
     console.print(f"[white]- Từ viết tắt mục tiêu:[/white] [red]{', '.join(target_words[:10])}...[/red]")
     console.print(f"[white]- Số bình luận tối đa:[/white] [cyan]{args.max}[/cyan]\n")
 
-    results = crawler.run(
-        target_input=args.input,
-        max_comments=args.max,
-        export_formats=export_formats
-    )
+    if len(url_list) == 1:
+        results = crawler.run(
+            target_input=url_list[0],
+            max_comments=args.max,
+            export_formats=export_formats
+        )
+    else:
+        console.print(f"[bold cyan]>>> Đang cào hàng loạt từ {len(url_list)} mục tiêu...[/bold cyan]")
+        all_raw_items = []
+        max_per_url = max(50, args.max // len(url_list))
+
+        for idx, u in enumerate(url_list, 1):
+            console.print(f"\n[cyan]({idx}/{len(url_list)}) Đang cào:[/cyan] {u}")
+            raw_items = crawler.fetch_raw_comments(u, max_comments=max_per_url)
+            all_raw_items.extend(raw_items)
+
+        crawler.exporter.save_raw_json(all_raw_items, filename_prefix="raw_batch")
+        processed = crawler.filter_and_enrich(all_raw_items)
+        crawler.exporter.export_processed_data(processed, formats=export_formats)
+        crawler.exporter.generate_summary_report(processed)
+        results = processed
 
     console.print(f"\n[bold green]Hoàn thành thu thập! Tổng cộng {len(results)} bình luận thỏa mãn tiêu chí đã được trích xuất và xuất file.[/bold green]")
 
